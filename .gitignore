@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Large data
+data/raw/*
+data/splits/*
+
+# But keep folder structure
+!data/raw/.gitkeep
+!data/splits/.gitkeep
+
+# Experiments / checkpoints
+experiments/*
+!experiments/.gitkeep
+
+# Model weights
+*.pth
+*.pt
+*.ckpt
+
+# Logs
+*.log
