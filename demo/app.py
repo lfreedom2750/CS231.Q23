@@ -3,8 +3,8 @@
 import streamlit as st
 import torch
 import torch.nn as nn
+from pathlib import Path
 from torchvision import transforms, models
-from torchvision.models import VGG16_Weights, ResNet18_Weights
 from PIL import Image
 import pandas as pd
 import numpy as np
@@ -14,6 +14,7 @@ import numpy as np
 # =========================================================
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+APP_DIR = Path(__file__).resolve().parent
 
 st.set_page_config(
     page_title="Skin Disease Classification",
@@ -53,9 +54,8 @@ transform = transforms.Compose([
 # =========================================================
 
 def create_vgg16_model(num_classes):
-    weights = VGG16_Weights.IMAGENET1K_V1
 
-    model = models.vgg16(weights=weights)
+    model = models.vgg16(weights=None)
 
     in_features = model.classifier[6].in_features
     model.classifier[6] = nn.Linear(in_features, num_classes)
@@ -63,13 +63,19 @@ def create_vgg16_model(num_classes):
     return model
 
 
-def create_resnet18_model(num_classes):
-    weights = ResNet18_Weights.IMAGENET1K_V1
+def create_resnet18_model(num_classes, use_dropout_head=False):
 
-    model = models.resnet18(weights=weights)
+    model = models.resnet18(weights=None)
 
     in_features = model.fc.in_features
-    model.fc = nn.Linear(in_features, num_classes)
+
+    if use_dropout_head:
+        model.fc = nn.Sequential(
+            nn.Dropout(p=0.2),
+            nn.Linear(in_features, num_classes)
+        )
+    else:
+        model.fc = nn.Linear(in_features, num_classes)
 
     return model
 
@@ -81,22 +87,28 @@ def create_resnet18_model(num_classes):
 @st.cache_resource
 def load_model(model_type, model_path):
 
-    if model_type == "VGG16":
-        model = create_vgg16_model(NUM_CLASSES)
-
-    elif model_type == "ResNet18":
-        model = create_resnet18_model(NUM_CLASSES)
-
-    else:
-        raise ValueError("Unsupported model")
-
     checkpoint = torch.load(
         model_path,
         map_location=DEVICE
     )
 
+    state_dict = checkpoint.get("model_state_dict", checkpoint)
+
+    if model_type == "VGG16":
+        model = create_vgg16_model(NUM_CLASSES)
+
+    elif model_type == "ResNet18":
+        use_dropout_head = "fc.1.weight" in state_dict
+        model = create_resnet18_model(
+            NUM_CLASSES,
+            use_dropout_head=use_dropout_head
+        )
+
+    else:
+        raise ValueError("Unsupported model")
+
     model.load_state_dict(
-        checkpoint["model_state_dict"]
+        state_dict
     )
 
     model.to(DEVICE)
@@ -143,8 +155,8 @@ model_type = st.sidebar.selectbox(
 # =========================================================
 
 MODEL_PATHS = {
-    "VGG16": "best_vgg16.pth",
-    "ResNet18": "best_resnet18.pth"
+    "VGG16": APP_DIR / "best_vgg16.pth",
+    "ResNet18": APP_DIR / "best_resnet18.pth"
 }
 
 model_path = MODEL_PATHS[model_type]
