@@ -13,8 +13,8 @@
 
 | STT | MSSV     | Họ và Tên            | Chức vụ     | Email                  |
 |-----|----------|----------------------|-------------|------------------------|
-| 1   | 22520982 | Phạm Hoàng Lê Nguyên | Nhóm trưởng | 22520982@gm.uit.edu.vn |
-| 2   | 23520899 | Nguyễn Thế Luân      | Thành viên  | 23520899@gm.uit.edu.vn |
+| 1   | 23520899 | Nguyễn Thế Luân      | Nhóm trưởng | 23520899@gm.uit.edu.vn |
+| 2   | 23520361  | Đặng Vân Duy | Thành viên | 23520361@gm.uit.edu.vn |
 
 ---
 
