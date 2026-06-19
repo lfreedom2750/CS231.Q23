@@ -24,7 +24,7 @@
 - **Mã môn học:** CS231
 - **Mã lớp:** CS231.Q23
 - **Năm học:** Học kỳ 2 (2025 - 2026)
-- **Giảng viên:** TS. Mai Tiến Dũng
+- **Giảng viên:** Tiến Sĩ Mai Tiến Dũng
 
 ---
 
